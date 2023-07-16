@@ -6,6 +6,12 @@ package it.polito.tdp.itunes;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultWeightedEdge;
+
+import it.polito.tdp.itunes.model.Album;
+import it.polito.tdp.itunes.model.BilancioAlbum;
 import it.polito.tdp.itunes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,6 +23,7 @@ import javafx.scene.control.TextField;
 public class FXMLController {
 	
 	private Model model;
+	Graph<Album,DefaultWeightedEdge> graph;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -34,7 +41,7 @@ public class FXMLController {
     private Button btnPercorso; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbA1"
-    private ComboBox<?> cmbA1; // Value injected by FXMLLoader
+    private ComboBox<Album> cmbA1; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbA2"
     private ComboBox<?> cmbA2; // Value injected by FXMLLoader
@@ -50,7 +57,13 @@ public class FXMLController {
 
     @FXML
     void doCalcolaAdiacenze(ActionEvent event) {
+    	txtResult.clear();
     	
+    	Album a = this.cmbA1.getValue();
+    	
+    	for(BilancioAlbum ba : this.model.getAdiacenti(a)) {
+    		txtResult.appendText(ba.getA().getTitle()+" = "+ba.getBilancio()+"\n");
+    	}
     }
 
     @FXML
@@ -60,6 +73,15 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	this.txtResult.clear();
+    	String prezzoTxt = this.txtN.getText();
+    	
+    	Integer prezzo = Integer.parseInt(prezzoTxt);
+    	this.graph = this.model.creaGrafo(prezzo);
+    	
+    	txtResult.appendText("#VERTICI: "+this.graph.vertexSet().size()+"\n"+"#ARCHI: "+this.graph.edgeSet().size()+"\n");
+    	
+    	this.cmbA1.getItems().addAll(this.graph.vertexSet());
     	
     }
 
